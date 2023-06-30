@@ -1,1 +1,120 @@
+### Script desenvolvido para realizar métrias de validação dos dados pluviais de 
+###produtos orbitais com os dados pluvias de postos pluviométricos em superfície.
+### Estre script faz parte do mateiral desenvolvido para compor um capítulo de livro
+### Matrtial produzido por Jakeline Baratto com base no pacote hydroGOF” de ZAMBRANO-BIGIARINI (2022)
+#### Aqui será trabalhao com dados do CHIRPS e TRMM comparada com um ponto em superfície. 
+
+#### Carregando pacotes
+library(terra)
+library(hydroGOF)
+
+#### Carregando pacotes
+### carregar dados dos probutos orbitais e de superfície
+dados = read.csv2(file.choose())
+dados
+
+######## Scritp para um posto com dados CHIRPS #####
+
+### Identificar as variáveis utilizadas 
+
+X1 <- dados$O1 ### dados de superfície 
+Yc1 <- dados$CH1 ### dados CHIRPS
+
+##### Aplicação das Metricas estatísticas ##############
+
+##### Correlação liner de Pearson
+
+cor1 <- cor(X1, Yc1)
+
+rc1 <- (cor(Yc1, X1, method="pearson"))^2 
+rc1
+
+## Formúla de regressão simples entre as variáveis 
+regch1 <- lm(Yc1 ~ X1)
+
+summary(regch1)
+
+R=c(summary(regch1))
+R
+
+R2c1 <- R$r.squared
+
+##### cálculo do ERRO MEDIO ABSOLUTO (MAE)
+MAEch1 <- mae(Yc1, X1)
+
+##### cálculo da RAIZ QUADRADA DO ERRO QUADRADO MEDIO (RMSE)
+RMSEch1 <- rmse(Yc1,X1)
+
+##### cálculo do índice de concordância (d)
+dch1 <- d(Yc1, X1)
+
+##### cálculo do PBIAS 
+
+pbiasch1 <- pbias(Yc1, X1)
+
+
+### Criando tabela com os resultados das métricas
+resultados_C1 <- data.frame(
+  Correlacao = cor1,
+  Coeficiente_Ajuste = R2c1,
+  MAE = MAEch1,
+  RMSE = RMSEch1,
+  Concordancia = dch1,
+  PBIAS = pbiasch1
+)
+resultados_C1
+
+######## Scritp para um posto com dados TRMM #####
+
+### Identificar as variáveis utilizadas
+X1 <- dados$O1 ### dados de superfície 
+Yt1 <- dados$TRMM1 ### dados TRMM
+
+##### Aplicação das Metricas estatísticas ##############
+
+##### Correlação liner de Pearson
+corT1 <- cor(X1, Yt1)
+
+rT1 <- (cor(Yt1, X1, method="pearson"))^2 
+rT1
+
+## Formúla de regressão simples entre as variáveis 
+regT1 <- lm(Yt1 ~ X1)
+
+summary(regT1)
+
+R=c(summary(regT1))
+R
+
+R2T1 <- R$r.squared
+
+##### cálculo do ERRO MEDIO ABSOLUTO (MAE)
+MAET1 <- mae(Yt1, X1)
+
+##### cálculo da RAIZ QUADRADA DO ERRO QUADRADO MEDIO (RMSE)
+RMSET1 <- rmse(Yt1,X1)
+
+##### cálculo do índice de concordância (d)
+dT1 <- d(Yt1, X1)
+
+##### cálculo do PBIAS 
+
+pbiasT1 <- pbias(Yt1, X1)
+
+
+### Criando tabela com os resultados das métricas
+
+resultados_T1 <- data.frame(
+  Correlacao = corT1,
+  Coeficiente_Ajuste = R2T1,
+  MAE = MAET1,
+  RMSE = RMSET1,
+  Concordancia = dT1,
+  PBIAS = pbiasT1
+)
+resultados_T1
+
+TABELA=matrix(c(resultados_C1,resultados_T1),ncol=6,byrow=TRUE)
+
+TABELA
 
